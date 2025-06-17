@@ -7,7 +7,7 @@ import copy
 import json
 import torch
 
-from ltp import LTP
+# from ltp import LTP # BUG?
 from torch.utils.data import Dataset
 from transformers import PreTrainedTokenizer, BatchEncoding, DataCollatorForLanguageModeling, DataCollatorWithPadding, DataCollatorForWholeWordMask
 
@@ -161,13 +161,13 @@ class QPCollator(DataCollatorForWholeWordMask):
         
         q_collated = self.tokenizer.pad(
             qq,
-            padding='max_length',
+            padding='longest',
             max_length=self.max_q_len,
             return_tensors="pt",
         )
         d_collated = self.tokenizer.pad(
             dd,
-            padding='max_length',
+            padding='longest',
             max_length=self.max_p_len,
             return_tensors="pt",
         )

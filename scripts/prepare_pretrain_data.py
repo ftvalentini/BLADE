@@ -1,6 +1,7 @@
 import gzip
 import json
 import argparse
+from pathlib import Path
 from tqdm import tqdm
 
 if __name__=="__main__":
@@ -10,11 +11,12 @@ if __name__=="__main__":
 
     args = parser.parse_args()
     
+    Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     with open(args.input) as f, open(args.output, "w") as g:
         for line in tqdm(f):
             query, text = line.strip().split("\t")
             query = query.strip().lower()
-            text = text.strip().lower()
+            pos_text = text.strip().lower()
             
             temp = {}
             temp["query"] = query

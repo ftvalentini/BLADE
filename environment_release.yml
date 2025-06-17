@@ -3,16 +3,17 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9.7
-  - pip=23.2
+  - python=3.11
+  - pip=24.2
   - pip:
-      - datasets==1.18.0
-      - huggingface-hub==0.2.1
-      - numpy==1.22.1
-      - sentencepiece==0.1.96
-      - tokenizers==0.10.3
-      - torch==1.9.0
-      - torchaudio==0.9.0
-      - torchvision==0.10.0
-      - tqdm==4.62.3
-      - transformers==4.15.0
+      - datasets==2.21.0
+      - huggingface-hub==0.24.7
+      - numpy==2.1.0
+      - sentencepiece==0.2.0
+      - transformers==4.43.4
+      - tokenizers==0.19.1
+      - torch==2.7.1
+      - torchaudio==2.7.1
+      - torchvision==0.22.1
+      - tqdm==4.66.5
+      - accelerate==1.7.0

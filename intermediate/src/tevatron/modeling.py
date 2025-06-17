@@ -122,9 +122,25 @@ class DenseModel(nn.Module):
             query_mlm: Dict[str, Tensor] = None,
             passage_mlm: Dict[str, Tensor] = None
     ):
-        q_mlm_loss = self.lm_q(**query_mlm).loss
-        p_mlm_loss = self.lm_p(**passage_mlm).loss
+        # q_mlm_loss = self.lm_q(**query_mlm).loss
+        # p_mlm_loss = self.lm_p(**passage_mlm).loss
+
+        # NOTE: the original code does not pass attention mask to the model, which is incorrect.
+        q_mlm_loss = self.lm_q(**query_mlm, attention_mask=query["attention_mask"]).loss
+        p_mlm_loss = self.lm_p(**passage_mlm, attention_mask=passage["attention_mask"]).loss
         
+        ### TEST (attention mask is missing in original code)
+        # self.lm_q.eval()
+        # x1 = self.lm_q(**query_mlm).loss
+        # x2 = self.lm_q(**query_mlm, attention_mask=query["attention_mask"]).loss
+        # print(x1, x2) # it is different...
+
+        # NOTE we tested that attention mask for query is correct for query_mlm:
+        # x = (query["input_ids"] == 0).cpu().numpy()
+        # y = (query_mlm["input_ids"] == 0).cpu().numpy()
+        # print((x == y).all())  # True
+        ###
+
         q_reps = self.encode_query(query)
         p_reps = self.encode_passage(passage)
         
@@ -160,7 +176,7 @@ class DenseModel(nn.Module):
             
             loss = loss + q_mlm_loss + p_mlm_loss
            
-           return DenseOutput(
+            return DenseOutput(
                 loss=loss,
                 scores=scores,
                 q_reps=q_reps,
@@ -185,7 +201,7 @@ class DenseModel(nn.Module):
         if psg is None:
             return None, None
 
-        psg_out = self.lm_p(**psg, return_dict=False)
+        psg_out = self.lm_p(**psg, return_dict=True)
         p_hidden = psg_out["logits"]
         p_reps = self.pooler(p_hidden, psg["attention_mask"], self.top_k)
         return p_reps
@@ -194,7 +210,7 @@ class DenseModel(nn.Module):
     def encode_query(self, qry):
         if qry is None:
             return None
-        qry_out = self.lm_q(**qry, return_dict=False)
+        qry_out = self.lm_q(**qry, return_dict=True)
         q_hidden = qry_out["logits"]
         q_reps = self.pooler(q_hidden, qry["attention_mask"], self.top_k)
         return q_reps
