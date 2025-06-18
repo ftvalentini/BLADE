@@ -2,6 +2,7 @@ import json
 import pickle
 import argparse
 from tqdm import tqdm
+from pathlib import Path
 
 def get_map_dict(path):
     map_dict = {}
@@ -22,6 +23,7 @@ if __name__=="__main__":
     args = parser.parse_args()
     passage_dict = get_map_dict(args.passage_file)
     
+    Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     query_data = {}
     with open(args.input) as f, open(args.output, "w") as g:
         for line in tqdm(f, total=398792):
